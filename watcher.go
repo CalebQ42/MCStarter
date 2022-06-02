@@ -35,11 +35,12 @@ func startWatcher() {
 	}()
 }
 
-func addToWatcher(loc string, f func()) (err error) {
+func addDirToWatcher(loc string, f func()) (err error) {
 	for watched == nil {
 		//since this is threaded, make sure that the map is created first
 		time.Sleep(100 * time.Millisecond)
 	}
+	loc = filepath.Clean(loc)
 	if _, ok := watched[loc]; ok {
 		return nil
 	}
@@ -51,8 +52,26 @@ func addToWatcher(loc string, f func()) (err error) {
 	return nil
 }
 
+func addToWatcher(loc string, f func()) (err error) {
+	for watched == nil {
+		//since this is threaded, make sure that the map is created first
+		time.Sleep(100 * time.Millisecond)
+	}
+	loc = filepath.Clean(loc)
+	if _, ok := watched[loc]; ok {
+		return nil
+	}
+	err = watcher.Watch(loc)
+	if err != nil {
+		return err
+	}
+	watched[loc] = f
+	return nil
+}
+
 func resetWatcher() {
 	for loc := range watched {
+		watcher.RemoveWatch(loc)
 		watcher.RemoveWatch(filepath.Dir(loc))
 	}
 }

@@ -84,7 +84,7 @@ func main() {
 			os.Exit(0)
 		}
 		if stopLoc != "" {
-			err = addToWatcher(stopLoc, func() {
+			err = addDirToWatcher(stopLoc, func() {
 				stop <- struct{}{}
 			})
 			if err != nil {
@@ -104,7 +104,7 @@ func main() {
 			}
 		}
 		for _, s := range serv {
-			err = addToWatcher(s.stop, s.stopOrStart)
+			err = addDirToWatcher(s.stop, s.stopOrStart)
 			if err != nil {
 				log.Println("can't watch", s.name, "stop file...")
 				log.Println(err)
