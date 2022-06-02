@@ -37,7 +37,7 @@ loginctl enable-linger $USER
 systemctl --user start mcstarter
 ```
 
-Important: Unless you specify a global working directory, the default working directory is `$HOME`.
+Unless you specify a global working directory, the default working directory is `$HOME`.
 
 As root:
 
