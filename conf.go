@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -16,6 +17,8 @@ func processConf(f *os.File) (err error) {
 	var curServ *server
 	var lineNum, ind int
 	var key, value string
+	var wdSet bool
+	var tmpLog string
 	for err == nil {
 		line, err = rdr.ReadString('\n')
 		if line != "" && err != nil {
@@ -39,6 +42,23 @@ func processConf(f *os.File) (err error) {
 					return
 				}
 				serv = append(serv, curServ)
+			} else {
+				if rootMode && !wdSet {
+					log.Println("Working directory not specified, and run with root. Exiting...")
+					os.Exit(1)
+				}
+				if tmpLog != "" {
+					os.Remove(tmpLog)
+					var logFil *os.File
+					logFil, err = os.Create(tmpLog)
+					if err != nil {
+						log.Println("Can't create a new log file")
+						log.Println(err)
+						log.Println("Exiting...")
+						os.Exit(1)
+					}
+					log.SetOutput(logFil)
+				}
 			}
 			curServ = new(server)
 			curServ.name = strings.Trim(lineTrim, "[]")
@@ -57,18 +77,42 @@ func processConf(f *os.File) (err error) {
 		key, value = line[:ind], line[ind+1:]
 		if curServ == nil {
 			switch key {
-			case "log":
-				os.Remove(value)
-				var logFil *os.File
-				logFil, err = os.Create(value)
+			case "wd":
+				err = os.Chdir(value)
 				if err != nil {
-					log.Println("Can't create log file")
+					log.Println("Can't change working directory")
 					log.Println(err)
-					log.Println("Continuing to log to stdout")
-					err = nil
-					continue
+					log.Println("Exiting...")
+					os.Exit(1)
 				}
-				log.SetOutput(logFil)
+				wdSet = true
+				if tmpLog != "" {
+					os.Remove(tmpLog)
+					var logFil *os.File
+					logFil, err = os.Create(tmpLog)
+					if err != nil {
+						log.Println("Can't create a new log file")
+						log.Println(err)
+						log.Println("Exiting...")
+						os.Exit(1)
+					}
+					log.SetOutput(logFil)
+				}
+			case "log":
+				if wdSet || filepath.IsAbs(value) {
+					os.Remove(value)
+					var logFil *os.File
+					logFil, err = os.Create(value)
+					if err != nil {
+						log.Println("Can't create a new log file")
+						log.Println(err)
+						log.Println("Exiting...")
+						os.Exit(1)
+					}
+					log.SetOutput(logFil)
+				} else {
+					tmpLog = value
+				}
 			case "status":
 				statusLoc = value
 			case "stop":
@@ -125,6 +169,23 @@ func processConf(f *os.File) (err error) {
 			return
 		}
 		serv = append(serv, curServ)
+	} else {
+		if rootMode && !wdSet {
+			log.Println("Working directory not specified, and run with root. Exiting...")
+			os.Exit(1)
+		}
+		if tmpLog != "" {
+			os.Remove(tmpLog)
+			var logFil *os.File
+			logFil, err = os.Create(tmpLog)
+			if err != nil {
+				log.Println("Can't create a new log file")
+				log.Println(err)
+				log.Println("Exiting...")
+				os.Exit(1)
+			}
+			log.SetOutput(logFil)
+		}
 	}
 	if err == io.EOF {
 		err = nil

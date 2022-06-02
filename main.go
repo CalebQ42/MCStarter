@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 var (
@@ -12,6 +13,7 @@ var (
 	stopLoc   string
 	watchConf bool
 	stopped   bool
+	rootMode  bool
 	reset     chan struct{}
 	stop      chan struct{}
 )
@@ -20,6 +22,12 @@ var (
 var example []byte
 
 func main() {
+	if os.Getenv("USER") == "root" {
+		rootMode = true
+		log.Println("Starting in root mode...")
+	} else {
+		log.Println("Starting in user mode...")
+	}
 	startWatcher()
 	statusLoop()
 	reset = make(chan struct{})
@@ -29,9 +37,8 @@ func main() {
 		serv = make([]*server, 0)
 		log.SetOutput(os.Stdout)
 		stop = make(chan struct{})
-
 		confFil, err := os.Open("/etc/mcstarter.conf")
-		if err != nil {
+		if err != nil && !rootMode {
 			confFil, err = os.Open("mcstarter.conf")
 			if err != nil {
 				confFil, err = os.Create("mcstarter.conf")
@@ -43,10 +50,30 @@ func main() {
 				_, err = confFil.Write(example)
 				if err != nil {
 					log.Println("Can't write to example config...")
-					log.Println("err")
+					log.Println(err)
 					os.Exit(1)
 				}
+				wd, _ := os.Getwd()
+				log.Println("Example config file created at", filepath.Join(wd, confFil.Name()))
+				log.Println("Please configure your servers before restarting")
+				os.Exit(0)
 			}
+		} else if err != nil {
+			confFil, err = os.Create("/etc/mcstarter.conf")
+			if err != nil {
+				log.Println("Can't find /etc/mcstarter.conf, mcstarter.conf, and can't create an example file...")
+				log.Println(err)
+				os.Exit(1)
+			}
+			_, err = confFil.Write(example)
+			if err != nil {
+				log.Println("Can't write to example config...")
+				log.Println(err)
+				os.Exit(1)
+			}
+			log.Println("Example config file created at /etc/mcstarter.conf")
+			log.Println("Please configure your servers before restarting")
+			os.Exit(0)
 		}
 		err = processConf(confFil)
 		if err != nil {
