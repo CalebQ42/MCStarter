@@ -118,6 +118,12 @@ func main() {
 		log.Println("Starting servers...")
 		var shouldReset bool
 		for !shouldReset {
+			select {
+			case <-reset:
+				log.Println("config changed, restarting...")
+				shouldReset = true
+			case <-stop:
+			}
 			_, err = os.Open(stopLoc)
 			if (err == nil && !stopped) || shouldReset {
 				stopped = true
@@ -130,12 +136,6 @@ func main() {
 					s.stopOrStart()
 				}
 			}
-			select {
-			case <-reset:
-				shouldReset = true
-			case <-stop:
-			}
 		}
-		log.Println("config changed, restarting...")
 	}
 }
