@@ -1,4 +1,4 @@
 #!/bin/bash
 
 go build
-cp mcstarter /usr/bin
+sudo cp mcstarter /usr/bin
