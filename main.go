@@ -33,9 +33,12 @@ func main() {
 	reset = make(chan struct{})
 	for {
 		resetWatcher()
-		statusLoc = ""
-		serv = make([]*server, 0)
 		log.SetOutput(os.Stdout)
+		serv = make([]*server, 0)
+		statusLoc = ""
+		stopLoc = ""
+		watchConf = true
+		stopped = false
 		stop = make(chan struct{})
 		confFil, err := os.Open("/etc/mcstarter.conf")
 		if err != nil && !rootMode {
