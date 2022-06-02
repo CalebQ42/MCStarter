@@ -1,0 +1,2 @@
+# MCStarter
+Minecraft Server starter
