@@ -17,8 +17,10 @@ If mcstarter is stared as root (such as with sudo), it ONLY reads `/etc/mcstarte
 
 ## Installation
 
+The included install script builds and then installs mcstarter to /usr/bin.
+
 ```bash
-sudo install.sh #This will install mcstarter to /usr/bin
+sudo ./install.sh
 ```
 
 ## Autostart
@@ -30,10 +32,17 @@ As user:
 ```bash
 sudo cp mcstarter.service /usr/lib/systemd/user
 systemctl --user enable mcstarter
-#Optionally, login yourself when your computer starts.
-#If you don't do this, the service will only be started when you login and will close when you logout.
+```
+
+Optionally, log yourself in when your computer starts. If you don't do this, the service will only be started when you login and will close when you logout.
+
+```bash
 loginctl enable-linger $USER
-#Optionally, start the service now.
+```
+
+Optionally, start the service now.
+
+```bash
 systemctl --user start mcstarter
 ```
 
