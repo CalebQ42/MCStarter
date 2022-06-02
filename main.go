@@ -128,7 +128,7 @@ func main() {
 			if (err == nil && !stopped) || shouldReset {
 				stopped = true
 				for _, s := range serv {
-					s.stopOrStart()
+					s.stopCmd()
 				}
 			} else if err != nil && stopped {
 				stopped = false
