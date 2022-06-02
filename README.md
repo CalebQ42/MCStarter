@@ -29,6 +29,8 @@ Obviously you probably want your server to start with your computer (or server).
 
 As user:
 
+Unless you specify a global working directory, the default working directory is `$HOME`.
+
 ```bash
 sudo cp mcstarter.service /usr/lib/systemd/user
 systemctl --user enable mcstarter
@@ -45,8 +47,6 @@ Optionally, start the service now.
 ```bash
 systemctl --user start mcstarter
 ```
-
-Unless you specify a global working directory, the default working directory is `$HOME`.
 
 As root:
 

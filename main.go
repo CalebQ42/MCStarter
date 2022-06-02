@@ -133,5 +133,6 @@ func main() {
 			case <-stop:
 			}
 		}
+		log.Println("config changed, restarting...")
 	}
 }
