@@ -20,7 +20,7 @@ If mcstarter is stared as root (such as with sudo), it ONLY reads `/etc/mcstarte
 The included install script builds and then installs mcstarter to /usr/bin.
 
 ```bash
-sudo ./install.sh
+./install.sh
 ```
 
 ## Autostart
