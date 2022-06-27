@@ -46,7 +46,7 @@ func main() {
 			if err != nil {
 				confFil, err = os.Create("mcstarter.conf")
 				if err != nil {
-					log.Println("Can't find /etc/mcstarter.conf, mcstarter.conf, and can't create an example file...")
+					log.Println("Can't find /etc/mcstarter.conf, ./mcstarter.conf, and can't create an example file...")
 					log.Println(err)
 					os.Exit(1)
 				}

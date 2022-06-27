@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+
+	"github.com/CalebQ42/desktop/ini"
 )
 
 const (
@@ -28,6 +30,20 @@ type server struct {
 	memMin  int
 	status  byte
 	stopped bool
+}
+
+func newServer(name string, sec *ini.Section) (s *server, err error) {
+	s = new(server)
+	s.name = name
+	s.jar = sec.Value("jar").String()
+	s.java = sec.Value("java").String()
+	s.wd = sec.Value("wd").String()
+	s.memMax = sec.Value("memMax").Int()
+	s.memMin = sec.Value("memMin").Int()
+	s.args = sec.Value("args").String()
+	s.log = sec.Value("log").String()
+	s.stop = sec.Value("stop").String()
+	return s, s.validate()
 }
 
 func (s server) statusString() string {

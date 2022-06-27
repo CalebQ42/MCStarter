@@ -1,2 +1,4 @@
+github.com/CalebQ42/desktop v0.0.0-20220627101442-3336ef633fc4 h1:q8ZJbPShVSEq34d8z64o0+mTOEdzlvTXvofYQGZSOXg=
+github.com/CalebQ42/desktop v0.0.0-20220627101442-3336ef633fc4/go.mod h1:tBZjgp5T7Gi8phTBpZskJOn7b7INVedhQ8Gd18Ixj/w=
 gopkg.in/fsnotify.v0 v0.9.3 h1:EE38OZZkLmA44BsS+DCgO8BjptBMi3IbwTAUuKwU16k=
 gopkg.in/fsnotify.v0 v0.9.3/go.mod h1:ggSdmL/M3iqOa30tRdm4ctSkKd0e3Gsn8BE1lanSKk8=
