@@ -9,7 +9,6 @@ import (
 
 func processConf(f *os.File) (err error) {
 	fil, err := ini.Parse(f)
-	log.Println("yo tootle")
 	if err != nil {
 		return
 	}
