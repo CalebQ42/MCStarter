@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strconv"
 
@@ -121,7 +122,7 @@ func (s *server) start() (err error) {
 		args = append(args, s.args)
 		s.cmd = exec.Command(s.java, args...)
 	} else {
-		s.cmd = exec.Command(s.script)
+		s.cmd = exec.Command(path.Join("./", s.script))
 	}
 	s.cmd.Dir = s.wd
 	s.cmd.Stdout = logFil
