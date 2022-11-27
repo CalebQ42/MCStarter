@@ -21,6 +21,7 @@ func processConf(f *os.File) (err error) {
 			return
 		}
 	}
+	log.Println("pip")
 	if fil.PreSection().HasKey("log") {
 		os.Remove(fil.PreSection().Value("log").String())
 		var logFil *os.File
@@ -33,7 +34,6 @@ func processConf(f *os.File) (err error) {
 		}
 		log.SetOutput(logFil)
 	}
-	log.Println("pip")
 	statusLoc = fil.PreSection().Value("status").String()
 	stopLoc = fil.PreSection().Value("stop").String()
 	watchConf = fil.PreSection().Value("watchConf").Bool()
