@@ -80,8 +80,10 @@ func main() {
 		}
 		err = processConf(confFil)
 		if err != nil {
+			log.Println("hi")
 			os.Exit(1)
 		}
+		log.Println("hello")
 		log.Println("yodle")
 		if len(serv) == 0 {
 			log.Println("No servers found in config. Exiting...")
