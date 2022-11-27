@@ -77,9 +77,6 @@ func (s *server) validate() error {
 	if s.wd == "" {
 		s.wd = s.name
 	}
-	if s.script != "" {
-		s.log = filepath.Join(s.wd, s.script)
-	}
 	if s.log == "" {
 		s.log = "log"
 	}
