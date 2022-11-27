@@ -9,9 +9,11 @@ import (
 
 func processConf(f *os.File) (err error) {
 	fil, err := ini.Parse(f)
+	log.Println("toodle")
 	if err != nil {
 		return
 	}
+	log.Println("pip")
 	if fil.PreSection().HasKey("wd") {
 		err = os.Chdir(fil.PreSection().Value("wd").String())
 		if err != nil {
