@@ -3,7 +3,7 @@ module github.com/CalebQ42/MCStarter
 go 1.19
 
 require (
-	github.com/CalebQ42/desktop v0.0.4
+	github.com/CalebQ42/desktop v0.0.5
 	gopkg.in/fsnotify.v1 v1.4.7
 )
 
