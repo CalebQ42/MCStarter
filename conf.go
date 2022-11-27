@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -39,7 +38,6 @@ func processConf(f *os.File) (err error) {
 	watchConf = fil.PreSection().Value("watchConf").Bool()
 	servNames := fil.Sections()
 	serv = make([]*server, len(servNames))
-	fmt.Println("Hello: ", fil.Sections())
 	for i := range servNames {
 		serv[i], err = newServer(servNames[i], fil.Section(servNames[i]))
 		if err != nil {

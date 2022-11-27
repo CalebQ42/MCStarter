@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -135,7 +134,6 @@ func (s *server) start() (err error) {
 	s.status = serverOK
 	go func() {
 		s.cmd.Wait()
-		fmt.Println("um")
 		if s.cmd.ProcessState.ExitCode() == 0 {
 			s.status = serverClosed
 		} else {
