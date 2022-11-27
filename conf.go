@@ -36,5 +36,17 @@ func processConf(f *os.File) (err error) {
 	statusLoc = fil.PreSection().Value("status").String()
 	stopLoc = fil.PreSection().Value("stop").String()
 	watchConf = fil.PreSection().Value("watchConf").Bool()
-	//TODO: process all servers.
+	servNames := fil.Sections()
+	serv = make([]*server, len(servNames))
+	for i := range servNames {
+		serv[i], err = newServer(servNames[i], fil.Section(servNames[i]))
+		if err != nil{
+			return
+		}
+		err = serv[i].validate()
+		if err != nil{
+			return
+		}
+	}
+	return
 }

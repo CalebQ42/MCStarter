@@ -19,6 +19,7 @@ const (
 
 type server struct {
 	cmd     *exec.Cmd
+	script  string
 	name    string
 	jar     string
 	java    string
@@ -35,6 +36,7 @@ type server struct {
 func newServer(name string, sec *ini.Section) (s *server, err error) {
 	s = new(server)
 	s.name = name
+	s.script = sec.Value("script").String()
 	s.jar = sec.Value("jar").String()
 	s.java = sec.Value("java").String()
 	s.wd = sec.Value("wd").String()
@@ -65,14 +67,17 @@ func (s server) statusString() string {
 }
 
 func (s *server) validate() error {
-	if s.jar == "" {
-		return errors.New("jar must be specified")
+	if s.jar == "" && s.script == "" {
+		return errors.New("jar or script must be specified")
 	}
-	if s.java == "" {
+	if s.java == "" && s.jar != "" {
 		s.java = "java"
 	}
 	if s.wd == "" {
 		s.wd = s.name
+	}
+	if s.script != "" {
+		s.log = filepath.Join(s.wd, s.script)
 	}
 	if s.log == "" {
 		s.log = "log"
@@ -106,16 +111,20 @@ func (s *server) start() (err error) {
 		s.status = serverFailed
 		return
 	}
-	args := make([]string, 0)
-	if s.memMax != 0 {
-		args = append(args, "-Xmx"+strconv.Itoa(s.memMax)+"M")
+	if s.jar != "" {
+		args := make([]string, 0)
+		if s.memMax != 0 {
+			args = append(args, "-Xmx"+strconv.Itoa(s.memMax)+"M")
+		}
+		if s.memMin != 0 {
+			args = append(args, "-Xms"+strconv.Itoa(s.memMin)+"M")
+		}
+		args = append(args, "-jar", s.jar)
+		args = append(args, s.args)
+		s.cmd = exec.Command(s.java, args...)
+	} else {
+		s.cmd = exec.Command(s.script)
 	}
-	if s.memMin != 0 {
-		args = append(args, "-Xms"+strconv.Itoa(s.memMin)+"M")
-	}
-	args = append(args, "-jar", s.jar)
-	args = append(args, s.args)
-	s.cmd = exec.Command(s.java, args...)
 	s.cmd.Dir = s.wd
 	s.cmd.Stdout = logFil
 	s.cmd.Stderr = logFil
