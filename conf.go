@@ -9,18 +9,16 @@ import (
 
 func processConf(f *os.File) (err error) {
 	fil, err := ini.Parse(f)
-	log.Println("toodle")
 	if err != nil {
 		return
 	}
-	log.Println("pip")
 	if fil.PreSection().HasKey("wd") {
 		err = os.Chdir(fil.PreSection().Value("wd").String())
 		if err != nil {
 			log.Println("Can't change working directory")
 			log.Println(err)
 			log.Println("Exiting...")
-			os.Exit(1)
+			return
 		}
 	}
 	if fil.PreSection().HasKey("log") {
@@ -31,10 +29,11 @@ func processConf(f *os.File) (err error) {
 			log.Println("Can't create a new log file")
 			log.Println(err)
 			log.Println("Exiting...")
-			os.Exit(1)
+			return
 		}
 		log.SetOutput(logFil)
 	}
+	log.Println("pip")
 	statusLoc = fil.PreSection().Value("status").String()
 	stopLoc = fil.PreSection().Value("stop").String()
 	watchConf = fil.PreSection().Value("watchConf").Bool()
