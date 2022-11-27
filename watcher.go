@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"gopkg.in/fsnotify.v0"
+	"gopkg.in/fsnotify.v1"
 )
 
 var (
@@ -24,9 +24,9 @@ func startWatcher() {
 	}
 	watched = make(map[string]func())
 	go func() {
-		var event *fsnotify.FileEvent
+		var event fsnotify.Event
 		for {
-			event = <-watcher.Event
+			event = <-watcher.Events
 			f, ok := watched[filepath.Clean(event.Name)]
 			if ok {
 				f()
@@ -44,7 +44,7 @@ func addDirToWatcher(loc string, f func()) (err error) {
 	if _, ok := watched[loc]; ok {
 		return nil
 	}
-	err = watcher.Watch(filepath.Dir(loc))
+	err = watcher.Add(filepath.Dir(loc))
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func addToWatcher(loc string, f func()) (err error) {
 	if _, ok := watched[loc]; ok {
 		return nil
 	}
-	err = watcher.Watch(loc)
+	err = watcher.Add(loc)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func addToWatcher(loc string, f func()) (err error) {
 
 func resetWatcher() {
 	for loc := range watched {
-		watcher.RemoveWatch(loc)
-		watcher.RemoveWatch(filepath.Dir(loc))
+		watcher.Remove(loc)
+		watcher.Remove(filepath.Dir(loc))
 	}
 }

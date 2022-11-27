@@ -1,8 +1,13 @@
-module github.com/CalebQ42/mcstarter
+module github.com/CalebQ42/MCStarter
 
 go 1.19
 
 require (
-	github.com/CalebQ42/desktop v0.0.0-20220627113143-454948f5aa2d
-	gopkg.in/fsnotify.v0 v0.9.3
+	github.com/CalebQ42/desktop v0.0.1
+	gopkg.in/fsnotify.v1 v1.4.7
+)
+
+require (
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 )

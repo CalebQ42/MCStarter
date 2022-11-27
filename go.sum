@@ -1,6 +1,9 @@
-github.com/CalebQ42/desktop v0.0.0-20220627101442-3336ef633fc4 h1:q8ZJbPShVSEq34d8z64o0+mTOEdzlvTXvofYQGZSOXg=
-github.com/CalebQ42/desktop v0.0.0-20220627101442-3336ef633fc4/go.mod h1:tBZjgp5T7Gi8phTBpZskJOn7b7INVedhQ8Gd18Ixj/w=
-github.com/CalebQ42/desktop v0.0.0-20220627113143-454948f5aa2d h1:/Nxga5Ubpj8AdPJumFo5lSppMACLth0md70Sm6s6ah4=
-github.com/CalebQ42/desktop v0.0.0-20220627113143-454948f5aa2d/go.mod h1:tBZjgp5T7Gi8phTBpZskJOn7b7INVedhQ8Gd18Ixj/w=
-gopkg.in/fsnotify.v0 v0.9.3 h1:EE38OZZkLmA44BsS+DCgO8BjptBMi3IbwTAUuKwU16k=
-gopkg.in/fsnotify.v0 v0.9.3/go.mod h1:ggSdmL/M3iqOa30tRdm4ctSkKd0e3Gsn8BE1lanSKk8=
+github.com/CalebQ42/desktop v0.0.1 h1:WzwnVleOY1V4BP9Uursa4f1IZkcKSUk1C0sCUfL023c=
+github.com/CalebQ42/desktop v0.0.1/go.mod h1:tBZjgp5T7Gi8phTBpZskJOn7b7INVedhQ8Gd18Ixj/w=
+github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
+github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
+golang.org/x/sys v0.0.0-20220908164124-27713097b956/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.2.0 h1:ljd4t30dBnAvMZaQCevtY0xLLD0A+bRZXbgLMLU1F/A=
+golang.org/x/sys v0.2.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+gopkg.in/fsnotify.v1 v1.4.7 h1:xOHLXZwVvI9hhs+cLKq5+I5onOuwQLhQwiu63xxlHs4=
+gopkg.in/fsnotify.v1 v1.4.7/go.mod h1:Tz8NjZHkW78fSQdbUxIjBTcgA1z1m8ZHf0WmKUhAMys=
