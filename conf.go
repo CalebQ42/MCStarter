@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -21,7 +22,6 @@ func processConf(f *os.File) (err error) {
 			return
 		}
 	}
-	log.Println("pip")
 	if fil.PreSection().HasKey("log") {
 		os.Remove(fil.PreSection().Value("log").String())
 		var logFil *os.File
@@ -39,12 +39,12 @@ func processConf(f *os.File) (err error) {
 	watchConf = fil.PreSection().Value("watchConf").Bool()
 	servNames := fil.Sections()
 	serv = make([]*server, len(servNames))
+	fmt.Println(fil.Sections())
 	for i := range servNames {
 		serv[i], err = newServer(servNames[i], fil.Section(servNames[i]))
 		if err != nil {
 			return
 		}
 	}
-	log.Println("conf processed")
 	return
 }
