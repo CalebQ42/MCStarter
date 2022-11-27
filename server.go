@@ -121,8 +121,7 @@ func (s *server) start() (err error) {
 		args = append(args, s.args)
 		s.cmd = exec.Command(s.java, args...)
 	} else {
-		fmt.Println(s.script)
-		s.cmd = exec.Command("./" + s.script)
+		s.cmd = exec.Command(s.script)
 	}
 	s.cmd.Dir = s.wd
 	s.cmd.Stdout = logFil
