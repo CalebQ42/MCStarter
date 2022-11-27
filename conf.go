@@ -43,10 +43,7 @@ func processConf(f *os.File) (err error) {
 		if err != nil{
 			return
 		}
-		err = serv[i].validate()
-		if err != nil{
-			return
-		}
 	}
+	log.Println("conf processed")
 	return
 }

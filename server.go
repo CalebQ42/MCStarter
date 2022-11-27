@@ -101,7 +101,7 @@ func (s *server) updateStop() {
 		s.stopped = true
 	}
 	_, err := os.Open(s.stop)
-	s.stopped = err == nil
+	s.stopped = (err == nil)
 }
 
 func (s *server) start() (err error) {

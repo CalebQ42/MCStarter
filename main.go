@@ -96,6 +96,7 @@ func main() {
 				os.Exit(1)
 			}
 		}
+		log.Println("yo")
 		if watchConf {
 			err = addToWatcher(confFil.Name(), func() {
 				reset <- struct{}{}
