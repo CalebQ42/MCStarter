@@ -9,6 +9,7 @@ import (
 
 func processConf(f *os.File) (err error) {
 	fil, err := ini.Parse(f)
+	log.Println("yo tootle")
 	if err != nil {
 		return
 	}
@@ -40,7 +41,7 @@ func processConf(f *os.File) (err error) {
 	serv = make([]*server, len(servNames))
 	for i := range servNames {
 		serv[i], err = newServer(servNames[i], fil.Section(servNames[i]))
-		if err != nil{
+		if err != nil {
 			return
 		}
 	}
