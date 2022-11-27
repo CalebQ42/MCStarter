@@ -78,12 +78,11 @@ func main() {
 			log.Println("Please configure your servers before restarting")
 			os.Exit(0)
 		}
-		log.Println("yodle")
 		err = processConf(confFil)
 		if err != nil {
 			os.Exit(1)
 		}
-
+		log.Println("yodle")
 		if len(serv) == 0 {
 			log.Println("No servers found in config. Exiting...")
 			os.Exit(0)
