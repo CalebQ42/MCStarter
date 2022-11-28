@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/CalebQ42/desktop/ini"
 )
@@ -139,6 +140,7 @@ func (s *server) start() (err error) {
 	s.cmd.Dir = s.wd
 	s.cmd.Stdout = logFil
 	s.cmd.Stderr = logFil
+	s.cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	s.cmd.Stdin = cmdInRdr
 	log.Println(s.name, "started")
 	err = s.cmd.Start()
@@ -149,15 +151,15 @@ func (s *server) start() (err error) {
 	}
 	s.status = serverOK
 	go func() {
-		s.cmd.Wait()
+		s.cmd.Process.Wait()
 		if s.cmd.ProcessState.ExitCode() == 0 {
 			s.status = serverClosed
 		} else {
 			s.status = serverFailed
 		}
 		s.cmd = nil
+		log.Println(s.name, "stopped")
 		updateStatus <- struct{}{}
-		log.Println(s.name, "closed")
 	}()
 	updateStatus <- struct{}{}
 	return
@@ -165,11 +167,11 @@ func (s *server) start() (err error) {
 
 func (s *server) stopCmd() {
 	if s.cmd != nil {
-		err := s.cmd.Process.Signal(os.Interrupt)
-		if err != nil {
-			s.cmd.Process.Kill()
+		pgid, err := syscall.Getpgid(s.cmd.Process.Pid)
+		if err == nil {
+			syscall.Kill(-pgid, syscall.SIGINT)
 		}
-		s.cmd.Wait()
+		s.cmd.Process.Wait()
 	}
 }
 
