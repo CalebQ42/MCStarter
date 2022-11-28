@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "embed"
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -28,6 +29,21 @@ func main() {
 	} else {
 		log.Println("Starting in user mode...")
 	}
+	flag.Parse()
+	var confLoc string
+	if len(flag.Args()) > 0 {
+		confLoc = flag.Arg(0)
+	} else {
+		confLoc = "/etc/mcstarter.conf"
+		_, err := os.Open("/etc/mcstarter.conf")
+		if !rootMode && os.IsNotExist(err) {
+			confLoc = "mcstarter.conf"
+		}
+	}
+	if !filepath.IsAbs(confLoc) {
+		wd, _ := os.Getwd()
+		confLoc = filepath.Join(wd, confLoc)
+	}
 	startWatcher()
 	statusLoop()
 	reset = make(chan struct{})
@@ -40,41 +56,21 @@ func main() {
 		watchConf = true
 		stopped = false
 		stop = make(chan struct{})
-		confFil, err := os.Open("/etc/mcstarter.conf")
-		if err != nil && !rootMode {
-			confFil, err = os.Open("mcstarter.conf")
+		confFil, err := os.Open(confLoc)
+		if os.IsNotExist(err) {
+			confFil, err = os.Create(confLoc)
 			if err != nil {
-				confFil, err = os.Create("mcstarter.conf")
-				if err != nil {
-					log.Println("Can't find /etc/mcstarter.conf, ./mcstarter.conf, and can't create an example file...")
-					log.Println(err)
-					os.Exit(1)
-				}
-				_, err = confFil.Write(example)
-				if err != nil {
-					log.Println("Can't write to example config...")
-					log.Println(err)
-					os.Exit(1)
-				}
-				wd, _ := os.Getwd()
-				log.Println("Example config file created at", filepath.Join(wd, confFil.Name()))
-				log.Println("Please configure your servers before restarting")
-				os.Exit(0)
-			}
-		} else if err != nil {
-			confFil, err = os.Create("/etc/mcstarter.conf")
-			if err != nil {
-				log.Println("Can't find /etc/mcstarter.conf, mcstarter.conf, and can't create an example file...")
-				log.Println(err)
+				log.Println("Conf file ("+confLoc+") doesn't exist and can't be created:", err)
 				os.Exit(1)
 			}
 			_, err = confFil.Write(example)
 			if err != nil {
-				log.Println("Can't write to example config...")
+				log.Println("Can't write example config...")
 				log.Println(err)
 				os.Exit(1)
 			}
-			log.Println("Example config file created at /etc/mcstarter.conf")
+			wd, _ := os.Getwd()
+			log.Println("Example config file created at", filepath.Join(wd, confFil.Name()))
 			log.Println("Please configure your servers before restarting")
 			os.Exit(0)
 		}
@@ -82,7 +78,6 @@ func main() {
 		if err != nil {
 			os.Exit(1)
 		}
-		log.Println("yodle")
 		if len(serv) == 0 {
 			log.Println("No servers found in config. Exiting...")
 			os.Exit(0)
@@ -97,7 +92,6 @@ func main() {
 				os.Exit(1)
 			}
 		}
-		log.Println("yo")
 		if watchConf {
 			err = addToWatcher(confFil.Name(), func() {
 				reset <- struct{}{}
@@ -115,6 +109,12 @@ func main() {
 				log.Println(err)
 				os.Exit(1)
 			}
+			err = addDirToWatcher(s.input, s.processInput)
+			if err != nil {
+				log.Println("can't watch", s.name, "input file...")
+				log.Println(err)
+				os.Exit(1)
+			}
 			s.stopOrStart()
 		}
 		log.Println("Starting servers...")
@@ -122,7 +122,7 @@ func main() {
 		for !shouldReset {
 			select {
 			case <-reset:
-				log.Println("config changed, restarting...")
+				log.Println("config changed, stopping servers...")
 				shouldReset = true
 			case <-stop:
 			}

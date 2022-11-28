@@ -1,4 +1,4 @@
-module github.com/CalebQ42/MCStarter
+module github.com/CalebQ42/mcstarter
 
 go 1.19
 

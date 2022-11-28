@@ -1,12 +1,16 @@
 package main
 
 import (
+	"bufio"
 	"errors"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/CalebQ42/desktop/ini"
 )
@@ -18,19 +22,21 @@ const (
 )
 
 type server struct {
-	cmd     *exec.Cmd
-	script  string
-	name    string
-	jar     string
-	java    string
-	wd      string
-	args    string
-	log     string
-	stop    string
-	memMax  int
-	memMin  int
-	status  byte
-	stopped bool
+	cmd      *exec.Cmd
+	cmdInput io.Writer
+	script   string
+	name     string
+	jar      string
+	java     string
+	wd       string
+	args     string
+	log      string
+	stop     string
+	input    string
+	memMax   int
+	memMin   int
+	status   byte
+	stopped  bool
 }
 
 func newServer(name string, sec *ini.Section) (s *server, err error) {
@@ -45,6 +51,7 @@ func newServer(name string, sec *ini.Section) (s *server, err error) {
 	s.args = sec.Value("args").String()
 	s.log = sec.Value("log").String()
 	s.stop = sec.Value("stop").String()
+	s.input = sec.Value("input").String()
 	return s, s.validate()
 }
 
@@ -88,6 +95,12 @@ func (s *server) validate() error {
 	if !filepath.IsAbs(s.stop) {
 		s.stop = filepath.Join(s.wd, s.stop)
 	}
+	if s.input == "" {
+		s.input = "input"
+	}
+	if !filepath.IsAbs(s.input) {
+		s.input = filepath.Join(s.wd, s.input)
+	}
 	s.updateStop()
 	s.status = 1
 	return nil
@@ -122,9 +135,13 @@ func (s *server) start() (err error) {
 	} else {
 		s.cmd = exec.Command(s.script)
 	}
+	var cmdInRdr io.Reader
+	cmdInRdr, s.cmdInput = io.Pipe()
 	s.cmd.Dir = s.wd
 	s.cmd.Stdout = logFil
 	s.cmd.Stderr = logFil
+	s.cmd.Stdin = cmdInRdr
+	log.Println(s.name, "started")
 	err = s.cmd.Start()
 	if err != nil {
 		s.status = serverFailed
@@ -141,16 +158,52 @@ func (s *server) start() (err error) {
 		}
 		s.cmd = nil
 		updateStatus <- struct{}{}
+		log.Println(s.name, "closed")
 	}()
 	updateStatus <- struct{}{}
 	return
 }
 
 func (s *server) stopCmd() {
-	err := s.cmd.Process.Signal(os.Interrupt)
-	if err != nil {
-		s.cmd.Process.Kill()
+	if s.cmd != nil {
+		err := s.cmd.Process.Signal(os.Interrupt)
+		if err != nil {
+			s.cmd.Process.Kill()
+		}
+		s.cmd.Wait()
 	}
+}
+
+func (s *server) processInput() {
+	in, err := os.Open(s.input)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return
+		}
+		log.Println("Can't read input file for", s.name)
+		log.Println(err)
+		return
+	}
+	buf := bufio.NewReader(in)
+	var line string
+	for {
+		line, err = buf.ReadString('\n')
+		if line != "" && err != nil {
+			err = nil
+		} else if line == "" && err != nil {
+			break
+		}
+		fmt.Println("command:", line)
+		if !strings.HasSuffix(line, "\n") {
+			line += "\n"
+		}
+		_, err = s.cmdInput.Write([]byte(line))
+		if err != nil {
+			log.Println("Can't send command:", line)
+			log.Println(err)
+		}
+	}
+	os.Remove(s.input)
 }
 
 func (s *server) stopOrStart() {
