@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -193,10 +192,10 @@ func (s *server) processInput() {
 		} else if line == "" && err != nil {
 			break
 		}
-		fmt.Println("command:", line)
 		if !strings.HasSuffix(line, "\n") {
 			line += "\n"
 		}
+		log.Println("Sending command \""+line[:len(line)-1]+"\" to", s.name)
 		_, err = s.cmdInput.Write([]byte(line))
 		if err != nil {
 			log.Println("Can't send command:", line)
