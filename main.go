@@ -102,6 +102,7 @@ func main() {
 				os.Exit(1)
 			}
 		}
+		log.Println("Starting servers...")
 		for _, s := range serv {
 			err = addDirToWatcher(s.stop, s.stopOrStart)
 			if err != nil {
@@ -117,7 +118,6 @@ func main() {
 			}
 			s.stopOrStart()
 		}
-		log.Println("Starting servers...")
 		var shouldReset bool
 		for !shouldReset {
 			select {
