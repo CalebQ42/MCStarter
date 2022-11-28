@@ -185,6 +185,7 @@ func (s *server) processInput() {
 	}
 	buf := bufio.NewReader(in)
 	var line string
+	empty := true
 	for {
 		line, err = buf.ReadString('\n')
 		if line != "" && err != nil {
@@ -192,6 +193,7 @@ func (s *server) processInput() {
 		} else if line == "" && err != nil {
 			break
 		}
+		empty = false
 		if !strings.HasSuffix(line, "\n") {
 			line += "\n"
 		}
@@ -202,7 +204,9 @@ func (s *server) processInput() {
 			log.Println(err)
 		}
 	}
-	os.Remove(s.input)
+	if !empty {
+		os.Remove(s.input)
+	}
 }
 
 func (s *server) stopOrStart() {
